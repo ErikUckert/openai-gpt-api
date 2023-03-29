@@ -8,8 +8,6 @@ process.env['APIKEY'] = env.APIKEY;
 process.env['ORGANISATION'] = env.ORGANISATION;
 process.env['PORT'] = env.PORT;
 
-console.log(process.env.APIKEY);
-
 const configuration = new Configuration({
     organization: process.env.ORGANISATION,
     apiKey: process.env.APIKEY, 
@@ -22,11 +20,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get("/", async (req, res) => {
+app.post("/", async (req, res) => {
+    const { message } = req.body;
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
-            {role: "user", content: "Hello World"},
+            {role: "user", content: `${message}`},
         ],
     });
     res.json({
