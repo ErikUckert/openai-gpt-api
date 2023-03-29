@@ -3,14 +3,21 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 
+import env from "./env.js"
+process.env['APIKEY'] = env.APIKEY;
+process.env['ORGANISATION'] = env.ORGANISATION;
+process.env['PORT'] = env.PORT;
+
+console.log(process.env.APIKEY);
+
 const configuration = new Configuration({
-    organization: "org-e6uvyvH9iYROGvwRwxTL8ha5",
-    apiKey: "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", 
+    organization: process.env.ORGANISATION,
+    apiKey: process.env.APIKEY, 
 });
 
 const openai = new OpenAIApi(configuration);
 const app = express();
-const port = 3000;
+// const port = 3000;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -27,6 +34,6 @@ app.get("/", async (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`App is listening at http://localhost:${port}`);
+app.listen(process.env.PORT, () => {
+    console.log(`App is listening at http://localhost:${process.env.PORT}`);
 });
