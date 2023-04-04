@@ -1,56 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPT4 CHAT API MODEL</title>
-</head>
-<body>
-    <h1>GPT4 CHAT API MODEL</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>GPT CHAT API MODEL</title>
+  </head>
+  <body>
+    <div class="hero min-h-screen bg-base-200">
+      <div class="hero-content flex-col lg:flex-row-reverse w-full">
+        <div class="text-center lg:text-left">
+          <h1 class="text-5xl font-bold">GPT CHAT API</h1>
+          <p class="py-6">
+            Use the OpenAI API to chat with the GPT3-TURBO Model
+          </p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-xl shadow-2xl bg-base-100">
+          <div class="card-body">
+            <form action="">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Chat</span>
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Ask me something"
+                  name="message"
+                  id="message"
+                  class="input input-bordered"
+                />
+              </div>
+              <div class="form-control mt-6">
+                <button class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+            <div class="py-6" id="chat-log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <h1>GPT4 CHAT API MODEL</h1>
     <form action="">
-        <input type="text" name="message", id="message">
-        <button type="submit">Send</button>
+      <input type="text" name="message" , id="message" />
+      <button type="submit">Send</button>
     </form>
-    <div id="chat-log"></div>
+    <div id="chat-log"></div> -->
     <script>
-        const chatLog = document.getElementById("chat-log");
-        const message = document.getElementById("message");
-        const form = document.querySelector("form");
-        form.addEventListener("submit", (e) =>{
-            e.preventDefault();
-            const messageText = message.value;
-            message.value = "";
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message");
-            messageElement.classList.add("message--sent");
-            messageElement.innerHTML = `
+      let messages = [];
+      const chatLog = document.getElementById("chat-log");
+      const message = document.getElementById("message");
+      const form = document.querySelector("form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const messageText = message.value;
+        const newMessage = { role: "user", content: `${messageText}` };
+        messages.push(newMessage);
+        message.value = "";
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.classList.add("message--sent");
+        messageElement.innerHTML = `
             <div class="message__text">${messageText}</div>
             `;
+        chatLog.appendChild(messageElement);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        fetch("http://localhost:3000", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messages,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            let newAssitentMessage = {
+              role: "assitent",
+              content: `${data.completion.content}`,
+            };
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            messageElement.classList.add("message--received");
+            messageElement.classList.add("font-bold");
+            messageElement.innerHTML = `
+                <hr>
+                <div class="message__text">"${data.completion.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g,'&gt;')}"</div>
+                `
+                ;
             chatLog.appendChild(messageElement);
             chatLog.scrollTop = chatLog.scrollHeight;
-            fetch("http://localhost:3000", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: messageText
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const messageElement = document.createElement("div");
-                messageElement.classList.add("message");
-                messageElement.classList.add("message--received");
-                messageElement.innerHTML = `
-                <div class="message__text">${data.completion.content}</div>
-                `;
-                chatLog.appendChild(messageElement);
-                chatLog.scrollTop = chatLog.scrollHeight;
-            })
-
-        });
+          });
+      });
     </script>
-</body>
+  </body>
 </html>
