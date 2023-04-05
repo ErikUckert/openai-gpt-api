@@ -106,11 +106,17 @@
             messageElement.classList.add("message--received");
             messageElement.classList.add("font-bold");
             messageElement.innerHTML = `
+                <br>  
                 <hr>
+                <br>
                 <div class="message__text">"${data.completion.content
                   .replace(/&/g, "&amp;")
                   .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")}"</div>
+                  .replace(/>/g, "&gt;")}"
+                </div>
+                <br>  
+                <hr>
+                <br>
                 `;
             chatLog.appendChild(messageElement);
             chatLog.scrollTop = chatLog.scrollHeight;
