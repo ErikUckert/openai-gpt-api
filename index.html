@@ -15,6 +15,7 @@
   <body>
     <div class="hero min-h-screen bg-base-200">
       <div class="hero-content flex-col lg:flex-row-reverse w-full">
+        <div class="flex justify-center items-center h-screen"></div>
         <div class="text-center lg:text-left">
           <h1 class="text-5xl font-bold">GPT CHAT API</h1>
           <p class="py-6">
@@ -38,10 +39,22 @@
                 />
               </div>
               <div class="form-control mt-6">
-                <button class="btn btn-primary">Submit</button>
+                <button id="fetchButton" class="btn btn-primary">Submit</button>
               </div>
             </form>
-            <div class="py-6" id="chat-log"></div>
+            <!-- <div class="py-6" id="chat-log"></div> -->
+            <div id="dataContainer" class="">
+              <!-- Your fetched data goes here -->
+              <div class="py-6" id="chat-log"></div>
+              <div
+                id="spinnerContainer"
+                class="hidden flex justify-center items-center"
+              >
+                <div
+                  class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -57,6 +70,7 @@
       const chatLog = document.getElementById("chat-log");
       const message = document.getElementById("message");
       const form = document.querySelector("form");
+      const spinnerContainer = document.getElementById("spinnerContainer");
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const messageText = message.value;
@@ -71,6 +85,7 @@
             `;
         chatLog.appendChild(messageElement);
         chatLog.scrollTop = chatLog.scrollHeight;
+        spinnerContainer.classList.remove("hidden");
         fetch("http://localhost:3000", {
           method: "POST",
           headers: {
@@ -92,11 +107,14 @@
             messageElement.classList.add("font-bold");
             messageElement.innerHTML = `
                 <hr>
-                <div class="message__text">"${data.completion.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g,'&gt;')}"</div>
-                `
-                ;
+                <div class="message__text">"${data.completion.content
+                  .replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")}"</div>
+                `;
             chatLog.appendChild(messageElement);
             chatLog.scrollTop = chatLog.scrollHeight;
+            spinnerContainer.classList.add("hidden");
           });
       });
     </script>
